@@ -1,0 +1,42 @@
+.quote {
+  padding: 20px 37px 20px 39px;
+  position: relative;
+}
+
+.quote__title {
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.quote__verse {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.quote__verse:last-child {
+  margin-bottom: 0;
+}
+
+.quote__verse-number {
+  position: absolute;
+  left: -30px;
+  top: 0;
+}
+
+.quote__actions {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  visibility: hidden;
+
+  text-align: right;
+  padding: 15px 32px;
+  cursor: move;
+}
+
+.quote:hover .quote__actions {
+  background-color: rgba(235, 251, 255, 0.7);
+  visibility: visible;
+}

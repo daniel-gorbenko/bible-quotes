@@ -1,0 +1,40 @@
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+@import "../../../node_modules/bootstrap/scss/mixins";
+
+@import "node_modules/bootstrap/scss/reboot";
+@import "node_modules/bootstrap/scss/grid";
+@import "../../../node_modules/bootstrap/scss/forms";
+@import "../../../node_modules/bootstrap/scss/buttons";
+
+.app {
+  width: 450px;
+  margin: 0 auto;
+}
+
+.app__header {
+  background-color: rgba(207, 241, 249, .1);
+  padding: 21px;
+}
+
+.app__content-empty {
+  height: 300px;
+  text-align: center;
+  padding-top: 100px;
+  vertical-align: text-bottom;
+}
+
+.app__content-loading {
+  height: 300px;
+  text-align: center;
+  padding-top: 100px;
+  vertical-align: text-bottom;
+}
+
+.app__content-title {
+  padding: 21px;
+}
+
+.app__footer {
+  padding: 21px;
+}

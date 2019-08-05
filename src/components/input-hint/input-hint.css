@@ -1,0 +1,14 @@
+.input-hint {
+  position: relative;
+}
+
+.input-hint input:first-child {
+  color: #999;
+}
+
+.input-hint input:last-child {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: transparent;
+}

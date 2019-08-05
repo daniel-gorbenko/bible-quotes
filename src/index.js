@@ -1,12 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { HashRouter as Router, Route, Switch } from 'react-router-dom';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import App from './components/app/app';
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const Index = (props) => {
+  return (
+    <Router>
+      <Route path="/:path" component={App}></Route>
+    </Router>
+  );
+};
+
+ReactDOM.render(<Index />, document.getElementById('root'));
+
+
+      // <Switch>
+        // <Route path="/:book\(:topic\::verseStart-:verseEnd\);" component={App}></Route>
+        // <Route component={() => <h1>404 страница</h1>}></Route>
+      // </Switch>
