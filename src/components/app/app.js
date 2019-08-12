@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import InputHint from '../input-hint/input-hint';
 import Quote from '../quote/quote';
+
+import api from '../../api';
 
 import './app.scss';
 
@@ -12,15 +14,41 @@ import './app.scss';
 // /foo(1:2-3);bar(1:2-3);
 
 const App = (props) => {
-
-  const [query, setQuery] = useState('Ио');
-  const [hint, setHint] = useState('Иоанна');
+  const [books, setBooks] = useState();
+  const [query, setQuery] = useState('Исход 4:5-8');
+  const [hint, setHint] = useState('Исход 4:5-8');
   const links = parseUrl(props.match.params.path);
   const [quotes, setQuotes] = useState([{title: "Евангелие от Иоанна 12:1-3", prev: null, next: null,
     list: [
-    {number: 1, text: "Использовать λ-функции для написания программы в функциональном стиле."},
-    {number: 2, text: "Использовать λ-функции для написания программы в функциональном стиле."}
+      "Использовать λ-функции для написания программы в функциональном стиле.",
+      "Использовать λ-функции для написания программы в функциональном стиле."
   ]}]);
+
+  useEffect(() => {
+    api.getBooks()
+      .then((response) => {
+        setBooks(response.data);
+      });
+  }, []);
+
+  function parseQuery(query) {
+    const pattern = /((\d?[а-яА-Я]*\s)?[а-яА-Я]+)\s+(\d+)\:(\d+)\-(\d+)/;
+
+    const matched = query.match(pattern);
+
+    return {
+      bookName: matched[1],
+      topic: matched[3],
+      verseStart: matched[4],
+      verseEnd: matched[5],
+    };
+  }
+
+  function match(url) {
+    const pattern = /(\w+)\((\d+)\:(\d+)-(\d+)\)/;
+
+    return url.match(pattern);
+  }
 
   function parseUrl(url) {
     const emptyArray = [];
@@ -35,31 +63,42 @@ const App = (props) => {
       delete links[links.length];
     }
 
-    const pattern = /(\w+)\((\d+)\:(\d+)-(\d+)\)/;
-
-    return links.map(link => link.match(pattern));
+    return links.map(link => match(link));
   }
+
+  const getAbbrevByName = (bookName) => {
+    return books.filter(book => {
+      return book.name === bookName;
+    })[0].abbrev;
+  };
 
   const onInputChange = (e) => {
     setQuery(e.target.value);
   }
 
-  const createQuote = (data) => {
-    setQuotes(state => {
-      const lastQuote = getLastQuote(state);
-      const quote = {title: query, prev: lastQuote, next: null,
-        list: [
-          {number: 1, text: "Использовать λ-функции для написания программы в функциональном стиле."}
-        ]
-      };
+  const onQuoteAdd = (data) => {
+    const parsedQuery = parseQuery(query);
 
+    api.getVerses({
+      bookAbbrev: getAbbrevByName(parsedQuery.bookName),
+      topic: parsedQuery.topic,
+      verseStart: parsedQuery.verseStart,
+      verseEnd: parsedQuery.verseEnd
+    })
+      .then((response) => {
+        setQuotes(state => {
+          const lastQuote = getLastQuote(state);
+          const quote = {title: query, prev: lastQuote, next: null,
+            list: response.data
+          };
 
-      if(lastQuote !== null) {
-         lastQuote.next = quote;
-      }
+          if(lastQuote !== null) {
+             lastQuote.next = quote;
+          }
 
-      return state.concat(quote);
-    });
+          return state.concat(quote);
+        })
+      });
   }
 
   const useHint = (e) => {
@@ -124,7 +163,7 @@ const App = (props) => {
               <InputHint hint={hint} value={query} onUseHint={useHint} onChange={onInputChange}/>
             </div>
             <div className="col-auto">
-              <button className="btn btn-primary" onClick={createQuote}>Добавить</button>
+              <button className="btn btn-primary" onClick={onQuoteAdd}>Добавить</button>
             </div>
           </div>
         </div>
