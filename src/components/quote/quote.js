@@ -19,7 +19,7 @@ const Quote = (props) => {
       </div>
 
       <div className="quote__actions">
-        <button className="btn btn-sm btn-danger">Удалить</button>
+        <button onClick={(e) => {props.onRemove(e)}} className="btn btn-sm btn-danger">Удалить</button>
       </div>
     </div>
   );

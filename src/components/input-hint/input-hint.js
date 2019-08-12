@@ -1,12 +1,18 @@
-import React from 'react';
+import React, {useState} from 'react';
 
 import './input-hint.css';
 
 const InputHint = (props) => {
+  const onKeyPress = (e) => {
+    if(e.key === 'Tab') {
+      props.onUseHint(e);
+    }
+  };
+
   return (
     <div className="input-hint">
-      <input className="form-control" type="text" value="Иоанна" />
-      <input onChange={props.onChange} className="form-control" type="text" value={props.value} />
+      <input className="form-control" type="text" value={props.hint} readOnly />
+      <input onKeyDown={onKeyPress} onChange={props.onChange} className="form-control" type="text" value={props.value} />
     </div>
   );
 };

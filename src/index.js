@@ -7,7 +7,7 @@ import App from './components/app/app';
 const Index = (props) => {
   return (
     <Router>
-      <Route path="/:path" component={App}></Route>
+      <Route path="/:path?" component={App}></Route>
     </Router>
   );
 };

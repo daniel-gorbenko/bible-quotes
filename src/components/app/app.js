@@ -14,13 +14,19 @@ import './app.scss';
 const App = (props) => {
 
   const [query, setQuery] = useState('Ио');
+  const [hint, setHint] = useState('Иоанна');
   const links = parseUrl(props.match.params.path);
-  const [quotes, setQuotes] = useState([{title: "Евангелие от Иоанна 12:1-3", order: 0, list: [
+  const [quotes, setQuotes] = useState([{title: "Евангелие от Иоанна 12:1-3", prev: null, next: null,
+    list: [
     {number: 1, text: "Использовать λ-функции для написания программы в функциональном стиле."},
     {number: 2, text: "Использовать λ-функции для написания программы в функциональном стиле."}
   ]}]);
 
   function parseUrl(url) {
+    const emptyArray = [];
+
+    if(!url) return emptyArray;
+
     const links = url.split(';');
 
     if(links.length > 0) {
@@ -33,16 +39,81 @@ const App = (props) => {
 
     return links.map(link => link.match(pattern));
   }
-  function onInputChange(e) {
+
+  const onInputChange = (e) => {
     setQuery(e.target.value);
   }
-  function createQuote(data) {
+
+  const createQuote = (data) => {
     setQuotes(state => {
-      return state.concat({title: query, order: quotes[quotes.length - 1].order + 1, list: [
-        {number: 1, text: "Использовать λ-функции для написания программы в функциональном стиле."}
-      ]});
+      const lastQuote = getLastQuote(state);
+      const quote = {title: query, prev: lastQuote, next: null,
+        list: [
+          {number: 1, text: "Использовать λ-функции для написания программы в функциональном стиле."}
+        ]
+      };
+
+
+      if(lastQuote !== null) {
+         lastQuote.next = quote;
+      }
+
+      return state.concat(quote);
     });
   }
+
+  const useHint = (e) => {
+    e.preventDefault();
+    setQuery(hint);
+  };
+
+  const onQuoteRemove = (quote) => {
+    setQuotes(state => {
+      if(quote.prev !== null) {
+        quote.prev.next = quote.next;
+      }
+
+      if(quote.next !== null) {
+        quote.next.prev = quote.prev;
+      }
+
+      return [].concat(
+        state.slice(0, state.indexOf(quote)),
+        state.slice(state.indexOf(quote) + 1)
+      );
+    });
+  };
+
+  const getFirstQuote = (quotes) => {
+    const filteredQuotes = quotes.filter((quote) => {
+      return quote.prev === null;
+    });
+
+    return (filteredQuotes.length === 1) ? filteredQuotes[0] : null;
+  };
+
+  const getLastQuote = (quotes) => {
+    const filteredQuotes = quotes.filter((quote) => {
+      return quote.next === null;
+    });
+
+    return (filteredQuotes.length === 1) ? filteredQuotes[0] : null;
+  };
+
+  const mapListBy = (startItem, prop, fn) => {
+    if(startItem === null) return null;
+
+    const returnItems = [];
+    let currentItem = startItem;
+
+    for(let i = 0; currentItem !== null; i++) {
+      returnItems.push(fn(currentItem, i));
+
+      currentItem = currentItem[prop];
+    }
+
+    return returnItems;
+  };
 
   return (
     <div className="app">
@@ -50,7 +121,7 @@ const App = (props) => {
         <div className="container">
           <div className="row">
             <div className="col">
-              <InputHint value={query} onChange={onInputChange}/>
+              <InputHint hint={hint} value={query} onUseHint={useHint} onChange={onInputChange}/>
             </div>
             <div className="col-auto">
               <button className="btn btn-primary" onClick={createQuote}>Добавить</button>
@@ -69,8 +140,8 @@ const App = (props) => {
         </div>
 
         <div className="app__content-quotes">
-          {quotes.map(quote => {
-            return <Quote key={quote.order} {...quote} />
+          {mapListBy(getFirstQuote(quotes), 'next', (quote, index) => {
+            return <Quote onRemove={(e) => onQuoteRemove(quote)} key={index} {...quote} />;
           })}
         </div>
       </div>
