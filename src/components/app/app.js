@@ -18,10 +18,10 @@ const App = (props) => {
   const [query, setQuery] = useState('Исход 4:5-8');
   const [hint, setHint] = useState('Исход 4:5-8');
   const links = parseUrl(props.match.params.path);
-  const [quotes, setQuotes] = useState([{title: "Евангелие от Иоанна 12:1-3", prev: null, next: null,
+  const [quotes, setQuotes] = useState([{title: "Евангелие от Иоанна 12:1-2", prev: null, next: null,
     list: [
-      "Использовать λ-функции для написания программы в функциональном стиле.",
-      "Использовать λ-функции для написания программы в функциональном стиле."
+      {index: 1, text: "Использовать λ-функции для написания программы в функциональном стиле"},
+      {index: 2, text: "Использовать λ-функции для написания программы в функциональном стиле."},
   ]}]);
 
   useEffect(() => {

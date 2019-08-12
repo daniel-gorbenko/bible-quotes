@@ -11,8 +11,8 @@ const Quote = (props) => {
         {props.list.map((verse, index) => {
           return (
             <div key={index} className="quote__verse">
-              <div className="quote__verse-number">{}</div>
-              <div className="quote__verse-text">{verse}</div>
+              <div className="quote__verse-number">{verse.index}</div>
+              <div className="quote__verse-text">{verse.text}</div>
             </div>
           );
         })}
