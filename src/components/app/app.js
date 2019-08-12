@@ -14,22 +14,12 @@ import './app.scss';
 // /foo(1:2-3);bar(1:2-3);
 
 const App = (props) => {
-  const [books, setBooks] = useState();
-  const [query, setQuery] = useState('Исход 4:5-8');
-  const [hint, setHint] = useState('Исход 4:5-8');
+  const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [query, setQuery] = useState('От Матфея 5:1-12');
+  const [hint, setHint] = useState(query);
   const links = parseUrl(props.match.params.path);
-  const [quotes, setQuotes] = useState([{title: "Евангелие от Иоанна 12:1-2", prev: null, next: null,
-    list: [
-      {index: 1, text: "Использовать λ-функции для написания программы в функциональном стиле"},
-      {index: 2, text: "Использовать λ-функции для написания программы в функциональном стиле."},
-  ]}]);
-
-  useEffect(() => {
-    api.getBooks()
-      .then((response) => {
-        setBooks(response.data.sort());
-      });
-  }, []);
+  const [quotes, setQuotes] = useState([]);
 
   function parseQuery(query) {
     const pattern = /((\d?[а-яА-Я]*\s)?[а-яА-Я]+)\s+(\d+)\:(\d+)\-(\d+)/;
@@ -92,6 +82,7 @@ const App = (props) => {
   }
 
   const onQuoteAdd = (data) => {
+    setIsLoading(true);
     const parsedQuery = parseQuery(query);
 
     api.getVerses({
@@ -111,10 +102,14 @@ const App = (props) => {
              lastQuote.next = quote;
           }
 
+          setIsLoading(false);
+
           return state.concat(quote);
         })
       });
   }
+
+  const isEmptyQuotesList = quotes.length === 0;
 
   const useHint = (e) => {
     e.preventDefault();
@@ -122,6 +117,8 @@ const App = (props) => {
   };
 
   const onQuoteRemove = (quote) => {
+    setIsLoading(true);
+
     setQuotes(state => {
       if(quote.prev !== null) {
         quote.prev.next = quote.next;
@@ -131,11 +128,14 @@ const App = (props) => {
         quote.next.prev = quote.prev;
       }
 
+      setIsLoading(false);
+
       return [].concat(
         state.slice(0, state.indexOf(quote)),
         state.slice(state.indexOf(quote) + 1)
       );
     });
+
   };
 
   const getFirstQuote = (quotes) => {
@@ -169,6 +169,17 @@ const App = (props) => {
     return returnItems;
   };
 
+  useEffect(() => {
+    api.getBooks()
+      .then((response) => {
+        setBooks(books => {
+          setIsLoading(false);
+
+          return response.data.sort();
+        });
+      })
+  }, []);
+
   return (
     <div className="app">
       <div className="app__header">
@@ -185,7 +196,15 @@ const App = (props) => {
       </div>
 
       <div className="app__content">
-        <div className="app__content-title">
+        <div className={`app__content-empty ${(!isEmptyQuotesList || isLoading) ? 'hidden' : ''}`}>
+         Вы не добавили ни одной цитаты
+        </div>
+
+        <div className={`app__content-empty ${!isLoading ? 'hidden' : ''}`}>
+         Загрузка ...
+        </div>
+
+        <div className={`app__content-title ${(isEmptyQuotesList || isLoading) ? 'hidden' : ''}`} >
           <div className="container-fluid">
             <div className="row">
               <div className="col"><h2>Синодальный перевод</h2></div>
@@ -193,7 +212,7 @@ const App = (props) => {
           </div>
         </div>
 
-        <div className="app__content-quotes">
+        <div className={`app__content-quotes ${(isEmptyQuotesList || isLoading) ? 'hidden' : ''}`}>
           {mapListBy(getFirstQuote(quotes), 'next', (quote, index) => {
             return <Quote onRemove={(e) => onQuoteRemove(quote)} key={index} {...quote} />;
           })}
