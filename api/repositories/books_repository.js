@@ -38,7 +38,7 @@ class BooksRepository {
         const verses = [];
 
         for(let i = verseStart - 1; i < verseEnd; i++) {
-          verses.push(bookTopic[i]);
+          verses.push({index: i + 1, text: bookTopic[i]});
         }
 
         return verses;
