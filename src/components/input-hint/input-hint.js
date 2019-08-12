@@ -7,6 +7,10 @@ const InputHint = (props) => {
     if(e.key === 'Tab') {
       props.onUseHint(e);
     }
+
+    if(e.key === 'Enter') {
+      props.onEnter(e);
+    }
   };
 
   return (

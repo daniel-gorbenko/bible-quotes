@@ -27,7 +27,7 @@ const App = (props) => {
   useEffect(() => {
     api.getBooks()
       .then((response) => {
-        setBooks(response.data);
+        setBooks(response.data.sort());
       });
   }, []);
 
@@ -72,7 +72,22 @@ const App = (props) => {
     })[0].abbrev;
   };
 
+  const setSimilarHint = (query) => {
+    const pattern = new RegExp(`^${query}`);
+    let hint = query;
+
+    for(let i = 0, l = books.length; i < l; i++) {
+      if(pattern.test(books[i].name)) {
+        hint = books[i].name;
+        break;
+      }
+    }
+
+    setHint(hint);
+  };
+
   const onInputChange = (e) => {
+    setSimilarHint(e.target.value);
     setQuery(e.target.value);
   }
 
@@ -160,7 +175,7 @@ const App = (props) => {
         <div className="container">
           <div className="row">
             <div className="col">
-              <InputHint hint={hint} value={query} onUseHint={useHint} onChange={onInputChange}/>
+              <InputHint hint={hint} value={query} onUseHint={useHint} onEnter={onQuoteAdd} onChange={onInputChange}/>
             </div>
             <div className="col-auto">
               <button className="btn btn-primary" onClick={onQuoteAdd}>Добавить</button>
