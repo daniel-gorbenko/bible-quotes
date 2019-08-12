@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import html2canvas from 'html2canvas';
 
 import InputHint from '../input-hint/input-hint';
 import Quote from '../quote/quote';
@@ -20,6 +21,18 @@ const App = (props) => {
   const [hint, setHint] = useState(query);
   const links = parseUrl(props.match.params.path);
   const [quotes, setQuotes] = useState([]);
+
+  const saveAsImage = () => {
+    html2canvas(document.getElementById('content-for-image'))
+      .then((canvas) => {
+          var link = document.createElement('a');
+
+          link.download = 'bible-quotes.png';
+          link.href = canvas.toDataURL("image/png");
+
+          link.click();
+      });
+  };
 
   function parseQuery(query) {
     const pattern = /((\d?[а-яА-Я]*\s)?[а-яА-Я]+)\s+(\d+)\:(\d+)\-(\d+)/;
@@ -204,7 +217,8 @@ const App = (props) => {
          Загрузка ...
         </div>
 
-        <div className={`app__content-title ${(isEmptyQuotesList || isLoading) ? 'hidden' : ''}`} >
+        <div id="content-for-image">
+          <div className={`app__content-title ${(isEmptyQuotesList || isLoading) ? 'hidden' : ''}`} >
           <div className="container-fluid">
             <div className="row">
               <div className="col"><h2>Синодальный перевод</h2></div>
@@ -217,12 +231,15 @@ const App = (props) => {
             return <Quote onRemove={(e) => onQuoteRemove(quote)} key={index} {...quote} />;
           })}
         </div>
+        </div>
       </div>
 
       <div className="app__footer">
         <div className="container-fluid">
           <div className="row">
-            <div className="col"><button className="btn btn-success btn-block">Сохранить как изображение</button></div>
+            <div className="col">
+              <button className="btn btn-success btn-block" onClick={saveAsImage}>Сохранить как изображение</button>
+            </div>
           </div>
         </div>
       </div>
