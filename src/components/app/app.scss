@@ -54,3 +54,15 @@
 .app__footer {
   padding: 21px;
 }
+
+@media screen and (max-width: 500px) {
+  .app {
+    width: 100%;
+  }
+
+  .quote__verse-number {
+    left: -25px;
+    top: 1px;
+    font-size: 13px;
+  }
+}
