@@ -17,7 +17,7 @@ import './app.scss';
 const App = (props) => {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [query, setQuery] = useState('От Матфея 5:2-3');
+  const [query, setQuery] = useState('От Матфея 5:43-43');
   const [hint, setHint] = useState(query);
   const links = useMemo(() => {
     return parseUrl(props.match.params.path);
