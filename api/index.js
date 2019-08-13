@@ -5,6 +5,6 @@ let app = express();
 
 route(app);
 
-app.listen(8080, () => {
+app.listen(process.env.PORT, () => {
   console.log('API is listening on 8080 port');
 });
