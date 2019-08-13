@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import html2canvas from 'html2canvas';
 
 import InputHint from '../input-hint/input-hint';
@@ -17,9 +17,11 @@ import './app.scss';
 const App = (props) => {
   const [books, setBooks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [query, setQuery] = useState('От Матфея 5:1-12');
+  const [query, setQuery] = useState('От Матфея 5:2-3');
   const [hint, setHint] = useState(query);
-  const links = parseUrl(props.match.params.path);
+  const links = useMemo(() => {
+    return parseUrl(props.match.params.path);
+  }, []);
   const [quotes, setQuotes] = useState([]);
 
   const saveAsImage = () => {
@@ -48,7 +50,7 @@ const App = (props) => {
   }
 
   function match(url) {
-    const pattern = /(\w+)\((\d+)\:(\d+)-(\d+)\)/;
+    const pattern = /^(\w+)\((\d+)\:(\d+)-(\d+)\)/;
 
     return url.match(pattern);
   }
@@ -59,20 +61,36 @@ const App = (props) => {
     if(!url) return emptyArray;
 
     const links = url.split(';');
+    const linksLastIndex = links.length - 1;
 
-    if(links.length > 0) {
-      links[0] = links[0].slice(1);
-
-      delete links[links.length];
+    if(links[linksLastIndex] === '') {
+      delete links[linksLastIndex];
     }
 
-    return links.map(link => match(link));
+    return links.map(link => {
+      const matched = match(link);
+
+      if(matched === null) return null;
+
+      return {
+        bookAbbrev: matched[1],
+        topic: matched[2],
+        verseStart: matched[3],
+        verseEnd: matched[4]
+      };
+    });
   }
 
   const getAbbrevByName = (bookName) => {
     return books.filter(book => {
       return book.name === bookName;
     })[0].abbrev;
+  };
+
+  const getNameByAbbrev = (bookAbbrev, books) => {
+    return books.filter(book => {
+      return book.abbrev === bookAbbrev;
+    })[0].name;
   };
 
   const setSimilarHint = (query) => {
@@ -94,31 +112,70 @@ const App = (props) => {
     setQuery(e.target.value);
   }
 
+  const composeUrl = ({bookAbbrev, topic, verseStart, verseEnd}) => {
+    return `${bookAbbrev}(${topic}:${verseStart}-${verseEnd})`;
+  };
+
+  const composeTitle = ({bookName, topic, verseStart, verseEnd}) => {
+    return `${bookName} ${topic}:${verseStart}-${verseEnd}`;
+  };
+
+  const addQuoteApi = (opt) => {
+    return api.getVerses(opt.options)
+      .then((response) => {
+        return new Promise((resolve, reject) => {
+          setQuotes(state => {
+            const lastQuote = getLastQuote(state);
+            const quote = {title: opt.title, prev: lastQuote, next: null,
+              list: response.data
+            };
+
+            if(lastQuote !== null) {
+               lastQuote.next = quote;
+            }
+
+            setIsLoading(false);
+
+            const resolveState = state.concat(quote);
+
+            resolve(resolveState);
+
+            return resolveState;
+          })
+        });
+      });
+  };
+
+  const loadQuotesFromLinks = (links, books) => {
+    setIsLoading(true);
+
+    const calls = links.reduce((prev, link) => {
+      return prev.then(() => {
+        return addQuoteApi({options: link, title: composeTitle(
+          Object.assign({}, link, {bookName: getNameByAbbrev(link.bookAbbrev, books)})
+        )});
+      })
+    }, Promise.resolve());
+
+    calls.then(() => {
+        setIsLoading(false);
+      });
+  };
+
   const onQuoteAdd = (data) => {
     setIsLoading(true);
-    const parsedQuery = parseQuery(query);
 
-    api.getVerses({
+    const parsedQuery = parseQuery(query);
+    const options = {
       bookAbbrev: getAbbrevByName(parsedQuery.bookName),
       topic: parsedQuery.topic,
       verseStart: parsedQuery.verseStart,
       verseEnd: parsedQuery.verseEnd
-    })
-      .then((response) => {
-        setQuotes(state => {
-          const lastQuote = getLastQuote(state);
-          const quote = {title: query, prev: lastQuote, next: null,
-            list: response.data
-          };
+    };
 
-          if(lastQuote !== null) {
-             lastQuote.next = quote;
-          }
-
-          setIsLoading(false);
-
-          return state.concat(quote);
-        })
+    addQuoteApi({options: options, title: query})
+      .then((quotes) => {
+        changePath(quotes);
       });
   }
 
@@ -141,12 +198,15 @@ const App = (props) => {
         quote.next.prev = quote.prev;
       }
 
-      setIsLoading(false);
-
-      return [].concat(
+      const quotes = [].concat(
         state.slice(0, state.indexOf(quote)),
         state.slice(state.indexOf(quote) + 1)
       );
+
+      changePath(quotes);
+      setIsLoading(false);
+
+      return quotes;
     });
 
   };
@@ -168,7 +228,7 @@ const App = (props) => {
   };
 
   const mapListBy = (startItem, prop, fn) => {
-    if(startItem === null) return null;
+    if(startItem === null) return [];
 
     const returnItems = [];
     let currentItem = startItem;
@@ -182,15 +242,36 @@ const App = (props) => {
     return returnItems;
   };
 
+  const changePath = (quotes) => {
+    const links = mapListBy(getFirstQuote(quotes), 'next', (quote, index) => {
+      const parsedQuery = parseQuery(quote.title);
+
+      return composeUrl(Object.assign({}, parseQuery(quote.title), {
+        bookAbbrev: getAbbrevByName(parsedQuery.bookName)
+      }));
+    });
+
+    props.history.push(`/${links.join(';')}`);
+  };
+
   useEffect(() => {
     api.getBooks()
       .then((response) => {
-        setBooks(books => {
-          setIsLoading(false);
+        return new Promise((resolve, reject) => {
+          setBooks(books => {
+            setIsLoading(false);
 
-          return response.data.sort();
+            const sortedData = response.data.sort();
+            resolve(sortedData);
+
+            return sortedData;
+          });
         });
       })
+      .then((books) => {
+        loadQuotesFromLinks(links, books);
+      })
+
   }, []);
 
   return (
@@ -208,16 +289,16 @@ const App = (props) => {
         </div>
       </div>
 
-      <div className="app__content">
+      <div id="content-for-image" className="app__content">
         <div className={`app__content-empty ${(!isEmptyQuotesList || isLoading) ? 'hidden' : ''}`}>
-         Вы не добавили ни одной цитаты
+         <div>Вы не добавили ни одной цитаты</div>
         </div>
 
-        <div className={`app__content-empty ${!isLoading ? 'hidden' : ''}`}>
-         Загрузка ...
+        <div className={`app__content-loading ${!isLoading ? 'hidden' : ''}`}>
+          <div>Загрузка ...</div>
         </div>
 
-        <div id="content-for-image">
+        <div>
           <div className={`app__content-title ${(isEmptyQuotesList || isLoading) ? 'hidden' : ''}`} >
           <div className="container-fluid">
             <div className="row">
