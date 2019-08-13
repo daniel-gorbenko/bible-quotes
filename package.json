@@ -12,6 +12,7 @@
     "react-scripts": "3.0.1",
     "gh-pages": "2.0.1"
   },
+  "homepage": "https://daniel-gorbenko.github.io/bible-quotes",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
