@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/bible-quotes/precache-manifest.9e7efa3a82fe599743bb57d2e0ad6d88.js"
+  "/bible-quotes/precache-manifest.86b3dabca491dc20d57d9f1bdf78546e.js"
 );
 
 self.addEventListener('message', (event) => {

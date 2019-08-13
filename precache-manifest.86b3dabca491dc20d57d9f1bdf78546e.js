@@ -1,19 +1,19 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a2ea9137f7886b9bcc66813c4de32df9",
+    "revision": "a01b1371f0e6a9342f9d544ad1f017c8",
     "url": "/bible-quotes/index.html"
   },
   {
-    "revision": "353b0d738902a6e30548",
-    "url": "/bible-quotes/static/css/main.93fdb11b.chunk.css"
+    "revision": "ce79bd2c85570c1ffc45",
+    "url": "/bible-quotes/static/css/main.f0416567.chunk.css"
   },
   {
     "revision": "6f1d1ebd08090806a005",
     "url": "/bible-quotes/static/js/2.1bb75eac.chunk.js"
   },
   {
-    "revision": "353b0d738902a6e30548",
-    "url": "/bible-quotes/static/js/main.53c4817d.chunk.js"
+    "revision": "ce79bd2c85570c1ffc45",
+    "url": "/bible-quotes/static/js/main.45452cf6.chunk.js"
   },
   {
     "revision": "36c51c3ed48524870b7d",
