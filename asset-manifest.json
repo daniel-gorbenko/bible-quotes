@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.93fdb11b.chunk.css",
-    "main.js": "/static/js/main.53c4817d.chunk.js",
-    "main.js.map": "/static/js/main.53c4817d.chunk.js.map",
-    "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
-    "runtime~main.js.map": "/static/js/runtime~main.a8a9905a.js.map",
-    "static/js/2.1bb75eac.chunk.js": "/static/js/2.1bb75eac.chunk.js",
-    "static/js/2.1bb75eac.chunk.js.map": "/static/js/2.1bb75eac.chunk.js.map",
-    "index.html": "/index.html",
-    "precache-manifest.b735e392667d9d6c9845a4e90c362174.js": "/precache-manifest.b735e392667d9d6c9845a4e90c362174.js",
-    "service-worker.js": "/service-worker.js",
-    "static/css/main.93fdb11b.chunk.css.map": "/static/css/main.93fdb11b.chunk.css.map"
+    "main.css": "/bible-quotes/static/css/main.93fdb11b.chunk.css",
+    "main.js": "/bible-quotes/static/js/main.53c4817d.chunk.js",
+    "main.js.map": "/bible-quotes/static/js/main.53c4817d.chunk.js.map",
+    "runtime~main.js": "/bible-quotes/static/js/runtime~main.cf540e01.js",
+    "runtime~main.js.map": "/bible-quotes/static/js/runtime~main.cf540e01.js.map",
+    "static/js/2.1bb75eac.chunk.js": "/bible-quotes/static/js/2.1bb75eac.chunk.js",
+    "static/js/2.1bb75eac.chunk.js.map": "/bible-quotes/static/js/2.1bb75eac.chunk.js.map",
+    "index.html": "/bible-quotes/index.html",
+    "precache-manifest.9e7efa3a82fe599743bb57d2e0ad6d88.js": "/bible-quotes/precache-manifest.9e7efa3a82fe599743bb57d2e0ad6d88.js",
+    "service-worker.js": "/bible-quotes/service-worker.js",
+    "static/css/main.93fdb11b.chunk.css.map": "/bible-quotes/static/css/main.93fdb11b.chunk.css.map"
   }
 }
